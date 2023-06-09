@@ -37,7 +37,7 @@ def make_request(tinybird_api_endpoint, headers, params, success_counter):
 
 def main():
     # Load Tinybird authentication token from local environment.
-    dotenv_path = os.path.join(os.path.dirname(__file__), 'config', '.env')
+    dotenv_path = os.path.join(os.path.dirname(__file__), '../config', '.env')
     load_dotenv(dotenv_path)
     tinybird_token = os.environ.get('TINYBIRD_TOKEN')
 
