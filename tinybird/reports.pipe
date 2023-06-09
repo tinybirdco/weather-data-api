@@ -1,0 +1,96 @@
+DESCRIPTION >
+	A Tinybird 'Pipe' that operates on the incoming_weather_data Data Source. Here we apply three Nodes:
+1)  city_and_period_of_interest: 'city', 'start_time', and 'end_times' query parameters
+2) select_sensor_type: apply any 'sensor_type' query parameter
+3) endpoint: apply the 'max_results' query parameter. 
+
+This demo is driven by polling data from OpenWeatherMap and loading that into Tinybird with the Events API. All timestamps are in UTC. Data is ordered by timestamp in reverse-chronological order in most cases.
+
+
+TOKEN "reports_endpoint_read_6043" READ
+
+NODE city_and_period_of_interest
+DESCRIPTION >
+    Applying 'city', 'start_time', and 'end_time' query parameters. This is a case where we pull in every field (SELECT \*) and do not take this opportunity to drop fields. The fields arriving via the Event API have already been curated by a Python script. 
+
+    Time parameters have this default behavior:
+    * If none are used, data from the past 24 hours are available.
+    * end_time defaults to the time of the request, i.e. now().
+    * start_time defaults to 24 hours before the end_time. 
+
+
+    For testing: 
+    {% set city = 'minneapolis' %}
+    {% set start_time = '2023-05-04 00:00:00' %}
+
+SQL >
+
+    %
+    SELECT *
+    FROM incoming_weather_data
+    WHERE
+        1=1
+         {% if defined(city) %}
+            AND lowerUTF8(site_name) LIKE lowerUTF8({{ String(city, description="Name of US City to get data for. Data is available for the 175 most populated cities in the US.") }})
+         {% end %}
+         {% if defined(start_time) and defined(end_time) %}
+             AND toDateTime(timestamp) BETWEEN {{ DateTime(start_time, description="'YYYY-MM-DD HH:mm:ss'. UTC. Defaults to 24 hours ago. The oldest timestamp of data provided. Defines the start of the period of interest. ") }} AND {{ DateTime(end_time, description="'YYYY-MM-DD HH:mm:ss'. UTC. Defaults to time of request. The newest timestamp of data provided. Defines the end of the period of interest.") }}
+         {% end %}
+         {% if not defined(start_time) and not defined(end_time) %}
+            AND toDateTime(timestamp) BETWEEN addDays(now(),-1) AND now()
+         {% end %}
+         {% if defined(start_time) and not defined(end_time) %}
+             AND toDateTime(timestamp) BETWEEN {{ DateTime(start_time) }} AND now()
+         {% end %}
+         {% if not defined(start_time) and defined(end_time) %}
+             AND toDateTime(timestamp) BETWEEN addDays(toDateTime({{DateTime(end_time)}}),-1) AND {{ DateTime(end_time) }}
+         {% end %}
+    ORDER BY timestamp DESC
+     
+
+                
+            
+
+
+
+NODE select_sensor_type
+DESCRIPTION >
+    Here we support the sensor_type query parameter. When used, just that data type is selected, along with the timestamp and site_name attributes. Note that 'wind' is a special case and two data types are returned (speed and direction).
+
+SQL >
+
+    %
+    WITH
+    {{ String(sensor_type, 'all', description="Type of weather data to return. Default is all types. Available types: 'temp', 'precip', 'wind', 'humidity', 'pressure', and 'clouds'. Wind returns both velocity and direction paramters. Units: temperature (F), precip (inches per hour), wind (mph and degrees) humidity (%), pressure (hPa), clouds (% coverage), ")}}
+
+    SELECT
+        timestamp,
+        site_name,
+        {% if defined(sensor_type) and sensor_type == 'temp' %} temp_f
+        {% elif defined(sensor_type) and sensor_type == 'precip' %} precip
+        {% elif defined(sensor_type) and sensor_type == 'wind' %} wind_speed, wind_dir
+        {% elif defined(sensor_type) and sensor_type == 'humidity' %} humidity
+        {% elif defined(sensor_type) and sensor_type == 'pressure' %} pressure
+        {% elif defined(sensor_type) and sensor_type == 'clouds' %} clouds
+        {% else %}
+            temp_f, precip, wind_speed, wind_dir, humidity, pressure, clouds, description
+        {% end %} 
+    FROM city_and_period_of_interest
+
+
+
+NODE endpoint
+DESCRIPTION >
+    Here we apply the 'max_results' parameter.
+
+SQL >
+
+    %
+    SELECT * 
+    FROM select_sensor_type
+    ORDER BY timestamp DESC
+    {% if defined(max_results) %}
+      LIMIT {{ Int32(max_results, 1000, description="The maximum number of reports to return per response.") }}
+    {% end %}
+
+
