@@ -76,13 +76,13 @@ To help illustrate how the API Endpoint should work, below are some example requ
 [/reports.json?start_time=2023-06-01 00:00:00&end_time=2023-06-08 00:00:00](https://api.tinybird.co/v0/pipes/reports.json?start_time=2023-06-01%2000:00:00&end_time=2023-06-08%2000:00:00&token=p.eyJ1IjogIjIzYjc5ZGVlLWFmNmItNDNjNS1hNWViLTkzYjNjNzE3ZTdiOCIsICJpZCI6ICJmNWZlYjg3ZS0wM2Q0LTRhN2MtODEwNy00ZDEzZThmNjgxNjMifQ.1i32I7ZMUm6pvZ_DEyu-XasBKKx1XYTEHzF8k4eRAzchttps://api.tinybird.co/v0/pipes/reports.json?max_results=1000&sensor_type=all&token=p.eyJ1IjogIjIzYjc5ZGVlLWFmNmItNDNjNS1hNWViLTkzYjNjNzE3ZTdiOCIsICJpZCI6ICJmNWZlYjg3ZS0wM2Q0LTRhN2MtODEwNy00ZDEzZThmNjgxNjMifQ.1i32I7ZMUm6pvZ_DEyu-XasBKKx1XYTEHzF8k4eRAzc)
 
 * Requesting full reports from Minneapolis since yesterday:  
-/reports.json?city=minneapolis
+[/reports.json?city=minneapolis](https://api.tinybird.co/v0/pipes/reports.json?city=minneapolis&token=p.eyJ1IjogIjIzYjc5ZGVlLWFmNmItNDNjNS1hNWViLTkzYjNjNzE3ZTdiOCIsICJpZCI6ICJmNWZlYjg3ZS0wM2Q0LTRhN2MtODEwNy00ZDEzZThmNjgxNjMifQ.1i32I7ZMUm6pvZ_DEyu-XasBKKx1XYTEHzF8k4eRAzchttps://api.tinybird.co/v0/pipes/reports.json?max_results=1000&sensor_type=all&token=p.eyJ1IjogIjIzYjc5ZGVlLWFmNmItNDNjNS1hNWViLTkzYjNjNzE3ZTdiOCIsICJpZCI6ICJmNWZlYjg3ZS0wM2Q0LTRhN2MtODEwNy00ZDEzZThmNjgxNjMifQ.1i32I7ZMUm6pvZ_DEyu-XasBKKx1XYTEHzF8k4eRAzc)
 
-* Requesting just temperature data since yesterday, for all cities:  
-/reports.json?sensor_time=temp
+* Requesting the 1,000 most recent temperatures, over the past day, from all cities:  
+[/reports.json?sensor_type=temp](https://api.tinybird.co/v0/pipes/reports.json?sensor_type=temp&token=p.eyJ1IjogIjIzYjc5ZGVlLWFmNmItNDNjNS1hNWViLTkzYjNjNzE3ZTdiOCIsICJpZCI6ICJmNWZlYjg3ZS0wM2Q0LTRhN2MtODEwNy00ZDEzZThmNjgxNjMifQ.1i32I7ZMUm6pvZ_DEyu-XasBKKx1XYTEHzF8k4eRAzchttps://api.tinybird.co/v0/pipes/reports.json?max_results=1000&sensor_type=all&token=p.eyJ1IjogIjIzYjc5ZGVlLWFmNmItNDNjNS1hNWViLTkzYjNjNzE3ZTdiOCIsICJpZCI6ICJmNWZlYjg3ZS0wM2Q0LTRhN2MtODEwNy00ZDEzZThmNjgxNjMifQ.1i32I7ZMUm6pvZ_DEyu-XasBKKx1XYTEHzF8k4eRAzc)
 
 * Request the 100 most recent weather reports from across the US:  
-/reports.json?max_results=100
+[/reports.json?max_results=100](https://api.tinybird.co/v0/pipes/reports.json?max_results=100&token=p.eyJ1IjogIjIzYjc5ZGVlLWFmNmItNDNjNS1hNWViLTkzYjNjNzE3ZTdiOCIsICJpZCI6ICJmNWZlYjg3ZS0wM2Q0LTRhN2MtODEwNy00ZDEzZThmNjgxNjMifQ.1i32I7ZMUm6pvZ_DEyu-XasBKKx1XYTEHzF8k4eRAzchttps://api.tinybird.co/v0/pipes/reports.json?max_results=1000&sensor_type=all&token=p.eyJ1IjogIjIzYjc5ZGVlLWFmNmItNDNjNS1hNWViLTkzYjNjNzE3ZTdiOCIsICJpZCI6ICJmNWZlYjg3ZS0wM2Q0LTRhN2MtODEwNy00ZDEzZThmNjgxNjMifQ.1i32I7ZMUm6pvZ_DEyu-XasBKKx1XYTEHzF8k4eRAzc)
 
-* Request temperature data for the city of Houston, and for June 3, 2023, midnight to midnight local time (CDT). 
-/reports.json?city=houston&sensor_type=temp&start_time=2023-06-03 05:00:00&end_time=2023-06-04 05:00:00
+* Request temperature data for the city of Houston, and for June 16, 2023, midnight to midnight local time (CDT). 
+[/reports.json?city=houston&sensor_type=temp&start_time=2023-06-03 05:00:00&end_time=2023-06-04 05:00:00](https://api.tinybird.co/v0/pipes/reports.json?city=houston&sensor_type=temp&start_time=2023-06-16%2006:00:00&end_time=2023-06-17%2006:00:00&token=p.eyJ1IjogIjIzYjc5ZGVlLWFmNmItNDNjNS1hNWViLTkzYjNjNzE3ZTdiOCIsICJpZCI6ICJmNWZlYjg3ZS0wM2Q0LTRhN2MtODEwNy00ZDEzZThmNjgxNjMifQ.1i32I7ZMUm6pvZ_DEyu-XasBKKx1XYTEHzF8k4eRAzchttps://api.tinybird.co/v0/pipes/reports.json?max_results=1000&sensor_type=all&token=p.eyJ1IjogIjIzYjc5ZGVlLWFmNmItNDNjNS1hNWViLTkzYjNjNzE3ZTdiOCIsICJpZCI6ICJmNWZlYjg3ZS0wM2Q0LTRhN2MtODEwNy00ZDEzZThmNjgxNjMifQ.1i32I7ZMUm6pvZ_DEyu-XasBKKx1XYTEHzF8k4eRAzc)
