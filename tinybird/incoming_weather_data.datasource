@@ -1,0 +1,18 @@
+DESCRIPTION >
+    Weather data from OpenWeatherMap, posted to Tinybird via the Events API and a Python script.
+
+SCHEMA >
+    `clouds` Int8 `json:$.clouds`,
+    `description` String `json:$.description`,
+    `humidity` Int8 `json:$.humidity`,
+    `precip` Float32 `json:$.precip`,
+    `pressure` Int8 `json:$.pressure`,
+    `site_name` String `json:$.site_name`,
+    `temp_f` Float32 `json:$.temp_f`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `wind_dir` Int8 `json:$.wind_dir`,
+    `wind_speed` Float32 `json:$.wind_speed`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYear(timestamp)"
+ENGINE_SORTING_KEY "timestamp, site_name, temp_f"
