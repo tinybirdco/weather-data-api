@@ -26,59 +26,57 @@ openweathermap_token = os.environ.get('OPENWEATHERMAP_TOKEN')
 tinybird_url = "https://api.tinybird.co/v0/events?name=incoming_weather_data"
 tinybird_token = os.environ.get('TINYBIRD_TOKEN')
 
-# Just keep trying to load data please... 
-while True:  
-    # Loop through each city and get its weather data
-    for city in cities:
-        # Set query parameters for the API request. 
-        params = {"q": city, "appid": openweathermap_token, "units": "imperial"} #<-- 'units' should be configurable. #Config
+# This script is called by a cron job. 
+# Just run once, looping thru the city names, then quit.
+# Loop through each city and get its weather data
+for city in cities:
+    # Set query parameters for the API request. 
+    params = {"q": city, "appid": openweathermap_token, "units": "imperial"} #<-- 'units' should be configurable. #Config
 
-        # Make the API request and get the JSON response
-        response = requests.get(openweathermap_url, params=params)
-        weather_data = response.json()
-        #print(weather_data) 
+    # Make the API request and get the JSON response
+    response = requests.get(openweathermap_url, params=params)
+    weather_data = response.json()
+    #print(weather_data) 
 
-        # "dt" is the timestamp of the weather snapshot and the number of seconds that have elapsed since January 1, 1970, at 00:00:00 UTC.
-        # So, format the timestamp as "%Y-%m-%d %H:%M:%S"
-        timestamp = weather_data["dt"]
-        dt_object = datetime.datetime.fromtimestamp(timestamp) 
-        dt_string = dt_object.strftime("%Y-%m-%d %H:%M:%S")
+    # "dt" is the timestamp of the weather snapshot and the number of seconds that have elapsed since January 1, 1970, at 00:00:00 UTC.
+    # So, format the timestamp as "%Y-%m-%d %H:%M:%S"
+    timestamp = weather_data["dt"]
+    dt_object = datetime.datetime.fromtimestamp(timestamp) 
+    dt_string = dt_object.strftime("%Y-%m-%d %H:%M:%S")
 
-        # As usual, the 'precip' has some 'special' attributes... OpenWeatherMap does not include this attribute if there is no rain. 
-        # In this case, we are after a full time-series, where no zero rain is wanted to have a non-null field.
-        # So, default to 0.0.
-        precip = 0.0
-        if "rain" in weather_data:
-            precip = weather_data["rain"]["1h"]
+    # As usual, the 'precip' has some 'special' attributes... OpenWeatherMap does not include this attribute if there is no rain. 
+    # In this case, we are after a full time-series, where no zero rain is wanted to have a non-null field.
+    # So, default to 0.0.
+    precip = 0.0
+    if "rain" in weather_data:
+        precip = weather_data["rain"]["1h"]
 
-        # Format the weather data as a JSON object. 
-        # This is where we are cherry-picking the data we are interested in. 
-        # This pre-defines the starting schema used in Tinybird. May be better to cast a wider net and pare down what isn't 
-        # wanted later in the Pipes ;) 
-        data = {
-            "timestamp": dt_string,
-            "site_name": city,
-            "temp_f": weather_data["main"]["temp"],
-            "precip": precip,
-            "humidity": weather_data["main"]["humidity"],
-            "pressure": weather_data["main"]["pressure"],
-            "wind_speed": weather_data["wind"]["speed"],
-            "wind_dir": weather_data["wind"]["deg"],
-            "clouds": weather_data["clouds"]["all"],
-            "description": weather_data["weather"][0]["description"]
-        }
+    # Format the weather data as a JSON object. 
+    # This is where we are cherry-picking the data we are interested in. 
+    # This pre-defines the starting schema used in Tinybird. May be better to cast a wider net and pare down what isn't 
+    # wanted later in the Pipes ;) 
+    data = {
+        "timestamp": dt_string,
+        "site_name": city,
+        "temp_f": weather_data["main"]["temp"],
+        "precip": precip,
+        "humidity": weather_data["main"]["humidity"],
+        "pressure": weather_data["main"]["pressure"],
+        "wind_speed": weather_data["wind"]["speed"],
+        "wind_dir": weather_data["wind"]["deg"],
+        "clouds": weather_data["clouds"]["all"],
+        "description": weather_data["weather"][0]["description"]
+    }
 
-        json_data = json.dumps(data)
-        
-        # Send the JSON object to the Tinybird Events API
-        headers = {"Authorization": f"Bearer {tinybird_token}", "Content-Type": "application/json"}
-        response = requests.post(tinybird_url, headers=headers, data=json_data)
-        
-        print(f"{json_data}) # This is a prototype afterall ;) 
-        
-        # Waiting until next request to weather API. In seconds:
-        time.sleep(1) 
+    json_data = json.dumps(data)
+    
+    # Send the JSON object to the Tinybird Events API
+    headers = {"Authorization": f"Bearer {tinybird_token}", "Content-Type": "application/json"}
+    response = requests.post(tinybird_url, headers=headers, data=json_data)
+    
+    print(f"{json_data}") # This is a prototype afterall ;) 
+    
+    # Waiting until next request to weather API. In seconds:
+    time.sleep(1) 
 
-    # Wait before iterating through all the cities again... 
-    print(f"Sleeping for {FETCH_INTERVAL/60} minutes at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    time.sleep( FETCH_INTERVAL )
+
