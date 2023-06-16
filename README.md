@@ -27,7 +27,11 @@ Next, you will need to create Tinybird and OpenWeatherMap accounts, create a Tin
 
 ### Start up near-real-time weather data feed
 + Set up Python script to load near-real-time OpenWeatherMap data into Tinybird.
-  + Configure ./config/.env with the OpenWeatherMap and Tinybird tokens. 
+  + Configure ./config/.env with the OpenWeatherMap and Tinybird tokens.
+```
+TINYBIRD_TOKEN={COPY-IN-YOUR-TINYBIRD-TOKEN}
+OPENWEATHERMAP_TOKEN={COPY-IN-YOUR-OPENTWEATHERMAO-TOKEN}
+```
   + Run the ./scripts/get_and_send_data.py script. This script is designed to be used with a 'scheduler', so runs once and quits.
     * Set up scheduler to run script every ten minutes. 
  
