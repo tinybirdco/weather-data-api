@@ -103,25 +103,6 @@ To help illustrate how the API Endpoint should work, below are some example requ
 * Request temperature data for the city of Houston, and for June 16, 2023, midnight to midnight local time (CDT). 
 [/reports.json?city=houston&sensor_type=temp&start_time=2023-06-03 05:00:00&end_time=2023-06-04 05:00:00](https://api.tinybird.co/v0/pipes/reports.json?city=houston&sensor_type=temp&start_time=2023-06-16%2006:00:00&end_time=2023-06-17%2006:00:00&token=p.eyJ1IjogIjIzYjc5ZGVlLWFmNmItNDNjNS1hNWViLTkzYjNjNzE3ZTdiOCIsICJpZCI6ICJmNWZlYjg3ZS0wM2Q0LTRhN2MtODEwNy00ZDEzZThmNjgxNjMifQ.1i32I7ZMUm6pvZ_DEyu-XasBKKx1XYTEHzF8k4eRAzchttps://api.tinybird.co/v0/pipes/reports.json?max_results=1000&sensor_type=all&token=p.eyJ1IjogIjIzYjc5ZGVlLWFmNmItNDNjNS1hNWViLTkzYjNjNzE3ZTdiOCIsICJpZCI6ICJmNWZlYjg3ZS0wM2Q0LTRhN2MtODEwNy00ZDEzZThmNjgxNjMifQ.1i32I7ZMUm6pvZ_DEyu-XasBKKx1XYTEHzF8k4eRAzc)
 
-## Checklist for replicating this demo
-
-- [ ] Set up accounts
-  - [ ] OpenWeatherMap
-  - [ ] Tinybird
-	
-- [ ] Establishing data feed
-  - [ ] Create Tinybird Data Source referencing report JSON object
-  - [ ] Set-up, configure and deploy the “get_and_post_data” Python script. 
-		
-- [] Build Tinybird Pipe 
-  * With CLI
-    - [ ] Push provided Pipe file to your Workspace
-  * With UI
-    - [ ] Create ‘reports’ Pipe
-    - [ ] Create Nodes 
-
-- [ ] Publish and test API Endpoint
-
 ## Nodes 
 
 The ``reports`` Pipe is has three Nodes:
@@ -161,7 +142,7 @@ ORDER BY timestamp DESC
 ```
 ### Node 2 named ``select_sensor_type``
 
-Here we support the ``sensor_type`` query parameter. When used, just that data type is selected, along with the timestamp and site_name attributes. Note that 'wind' is a special case and two data types are returned (speed and direction).
+Here we support the ``sensor_type`` query parameter. When used, just that data type is selected, along with the timestamp and site_name attributes. Note that 'wind' is a special case and two data types are returned (speed and direction). "Special cases" often result in confusion and 'special' code, so this should be updated to have separate wind_dir and wind_vel as sensor_type otpions. 
 
 ```sql
 %
@@ -195,4 +176,46 @@ ORDER BY timestamp DESC
 LIMIT {{ Int32(max_results, 1000, description="The maximum number of reports to return per response. Defaults to 1000.") }}
 
 ```
+
+## Checklist for replicating this demo
+
+- [ ] Set up accounts
+  - [ ] OpenWeatherMap
+  - [ ] Tinybird
+	
+- [ ] Establishing data feed
+  - [ ] Create Tinybird Data Source referencing report JSON object
+  - [ ] Set-up, configure and deploy the “get_and_post_data” Python script. 
+		
+- [] Build Tinybird Pipe 
+  * With CLI
+    - [ ] Push provided Pipe file to your Workspace
+  * With UI
+    - [ ] Create ‘reports’ Pipe
+    - [ ] Create Nodes 
+
+- [ ] Publish and test API Endpoint
+
+
+## Next steps? 
+
+Some ways to iterate the weather data API Endpoint: 
+
+- [ ] Add sensor types of ``wind_vel`` and ``wind_dir``.
+- [ ] Enable selecting a comma-delimited list of City names.
+- [ ] Parameterize number of days set start_time with (not a query parameter, but a configurable Pipe setting.
+- [ ] Enable selecting a comma-delimited list of City names.
+- [ ] Enable selecting a comma-delimited list of sensor types.
+- [ ] Add geographic metadata:
+  - [ ] Capture OpenWeatherMap geo metadata for current set of cities. 
+  - [ ] Enable data retrieval by geographic area, such as US States.
+  - [ ] Design an endpoint to serve up site metadata, including geographic metadata to support filtering by location. 
+
+
+
+
+
+ 
+
+
 
