@@ -54,6 +54,7 @@ The incoming data feed emits weather `report` objects with the following structu
 }
 ```
 
+<a id="markdown-createds" name="create-ds"></a>
 ### Creating Data Source
 
 This Events API request creates a new `incoming_weather_data` Data Source by referencing a `report` JSON object:
@@ -83,7 +84,6 @@ The ‘reports’ API Endpoint will support the following query parameters:
 * ```sensor_type``` for selecting a single type of weather data to return. The following values are supported: temp, precip, wind, humidity, pressure, and clouds. If not used, all weather data types are reported. When ‘wind’ is selected, both speed and direction are returned. 
 	
 * ```max_results``` for limiting the amount of reports to return in the response. The default value is 1000. 
-
 
 ## Example endpoint requests
 To help illustrate how the API Endpoint should work, below are some example requests. The root URL for all of these examples is https://api.tinybird.co/v0/pipes/reports.json. In these examples, just the /reports.json portion is referenced along with the query parameters.
@@ -189,10 +189,10 @@ LIMIT {{ Int32(max_results, 1000, description="The maximum number of reports to 
   - [ ] Tinybird
 	
 - [ ] Establishing data feed
-  - [ ] Create Tinybird Data Source referencing report JSON object
+  - [ ] Create Tinybird Data Source referencing report JSON object. See [example command](#create-ds)
   - [ ] Set-up, configure and deploy the “get_and_post_data” Python script. 
 		
-- [] Build Tinybird Pipe 
+- [ ] Build Tinybird Pipe 
   * With CLI
     - [ ] Push provided Pipe file to your Workspace
   * With UI
