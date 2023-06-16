@@ -1,16 +1,27 @@
 # weather-data-api
-A demo to illustrate how to go from an API design to implementing (and hosting) it on Tinybird.
+A demo to illustrate how to go from an API design to implementing (and hosting) it on Tinybird. 
+
+While this example focuses on publishing weather data, the underlying concepts should apply to an other data domain.
 
 ## Getting started 
 
+### Set up accounts
+
 + Go to [OpenWeatherMap](https://openweathermap.org/) and create a [free](https://openweathermap.org/price#weather) account for the "Current Weather and Forecasts" API.
-  + Generate an API key.  
+  + Generate an API key. An environmental variable will be set to this key value. 
 + Go to [Tinybird](http://tinybird.co) and create an account with the forever-free Build tier.
-  + Reference your Admin Token or create a User Token with read permissions.
-+ In Tinybird, create Data Source and Pipe. 
+  + Reference your Admin Token or create a User Token with read permissions. An environmental variable will be set to this key value.
+ 
+### Create Data Source and build Pipe
++ In Tinybird, create ``incoming_weather_data`` Data Source and ``reports`` Pipe.
+
+### Start up near-real-time weather data feed
 + Set up Python script to load near-real-time OpenWeatherMap data into Tinybird.
   + Configure ./config/.env with the OpenWeatherMap and Tinybird tokens. 
-  + Run the send_weather_data.py script. 
+  + Run the ./scripts/get_and_send_data.py script. This script is designed to be used with a 'scheduler', so runs once and quits.
+    * Set up scheduler to run script every ten minutes. 
+ 
+For a more details 'recipe' for building your own instance of this weather API, see [this section](). 
 
 ## Details
 
@@ -86,3 +97,23 @@ To help illustrate how the API Endpoint should work, below are some example requ
 
 * Request temperature data for the city of Houston, and for June 16, 2023, midnight to midnight local time (CDT). 
 [/reports.json?city=houston&sensor_type=temp&start_time=2023-06-03 05:00:00&end_time=2023-06-04 05:00:00](https://api.tinybird.co/v0/pipes/reports.json?city=houston&sensor_type=temp&start_time=2023-06-16%2006:00:00&end_time=2023-06-17%2006:00:00&token=p.eyJ1IjogIjIzYjc5ZGVlLWFmNmItNDNjNS1hNWViLTkzYjNjNzE3ZTdiOCIsICJpZCI6ICJmNWZlYjg3ZS0wM2Q0LTRhN2MtODEwNy00ZDEzZThmNjgxNjMifQ.1i32I7ZMUm6pvZ_DEyu-XasBKKx1XYTEHzF8k4eRAzchttps://api.tinybird.co/v0/pipes/reports.json?max_results=1000&sensor_type=all&token=p.eyJ1IjogIjIzYjc5ZGVlLWFmNmItNDNjNS1hNWViLTkzYjNjNzE3ZTdiOCIsICJpZCI6ICJmNWZlYjg3ZS0wM2Q0LTRhN2MtODEwNy00ZDEzZThmNjgxNjMifQ.1i32I7ZMUm6pvZ_DEyu-XasBKKx1XYTEHzF8k4eRAzc)
+
+## Recipe for replicating this demo
+
+* Set up accounts
+  * OpenWeatherMap
+  * Tinybird
+	
+* Establishing data feed
+  * Create Tinybird Data Source referencing report JSON object
+  * Set-up, configure and deploy the “get_and_post_data” Python script. 
+		
+* Build Tinybird Pipe 
+  * With CLI
+    + Push provided Pipe file to your Workspace
+  * With UI
+    + Create ‘reports’ Pipe
+    + Create Nodes 
+
+* Publish and test API Endpoint
+
