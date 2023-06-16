@@ -31,10 +31,10 @@ SQL >
     WHERE
         1=1
          {% if defined(city) %}
-            AND lowerUTF8(site_name) LIKE lowerUTF8({{ String(city, description="Name of US City to get data for. Data is available for the 175 most populated cities in the US.") }})
+            AND lowerUTF8(site_name) LIKE lowerUTF8({{ String(city, description="Name of US City to get data for. Data is available for the 175 most populated cities in the US. Optional and defaults to all cities.") }})
          {% end %}
          {% if defined(start_time) and defined(end_time) %}
-             AND toDateTime(timestamp) BETWEEN {{ DateTime(start_time, description="'YYYY-MM-DD HH:mm:ss'. UTC. Defaults to 24 hours ago. The oldest timestamp of data provided. Defines the start of the period of interest. ") }} AND {{ DateTime(end_time, description="'YYYY-MM-DD HH:mm:ss'. UTC. Defaults to time of request. The newest timestamp of data provided. Defines the end of the period of interest.") }}
+             AND toDateTime(timestamp) BETWEEN {{ DateTime(start_time, description="'YYYY-MM-DD HH:mm:ss'. UTC. Optional and defaults to 24 hours ago. Defines the start of the period of interest. ") }} AND {{ DateTime(end_time, description="'YYYY-MM-DD HH:mm:ss'. UTC. Optional and defaults to time of request. Defines the end of the period of interest.") }}
          {% end %}
          {% if not defined(start_time) and not defined(end_time) %}
             AND toDateTime(timestamp) BETWEEN addDays(now(),-1) AND now()
@@ -89,4 +89,7 @@ SQL >
     SELECT * 
     FROM select_sensor_type
     ORDER BY timestamp DESC
-    LIMIT {{ Int32(max_results, 1000, description="The maximum number of reports to return per response.") }}
+    LIMIT {{ Int32(max_results, 1000, description="The maximum number of reports to return per response. Defaults to 1000.") }}
+
+
+
