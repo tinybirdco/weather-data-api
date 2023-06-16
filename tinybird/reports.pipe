@@ -89,8 +89,4 @@ SQL >
     SELECT * 
     FROM select_sensor_type
     ORDER BY timestamp DESC
-    {% if defined(max_results) %}
-      LIMIT {{ Int32(max_results, 1000, description="The maximum number of reports to return per response.") }}
-    {% end %}
-
-
+    LIMIT {{ Int32(max_results, 1000, description="The maximum number of reports to return per response.") }}
