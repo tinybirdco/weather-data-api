@@ -3,6 +3,11 @@ A demo to illustrate how to go from an API design to implementing (and hosting) 
 
 While this example focuses on publishing weather data, the underlying concepts should apply to an other data domain.
 
+There are a lot of moving pieces, but here is a general outline of the resources provided:
+* Python script for getting weather data from OpenWeatherMap and posting it to a Tinybird Data Source.
+* How-tos for creating a ``incoming_weather_data`` Data Source and a ``reports`` Pipe. 
+* Python script for making requests to the weather API ``reports`` endpoint.  
+
 ## Getting started 
 
 You can start by making a clone or fork of this repository. 
