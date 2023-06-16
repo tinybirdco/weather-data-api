@@ -31,7 +31,7 @@ Next, you will need to create Tinybird and OpenWeatherMap accounts, create a Tin
   + Run the ./scripts/get_and_send_data.py script. This script is designed to be used with a 'scheduler', so runs once and quits.
     * Set up scheduler to run script every ten minutes. 
  
-When you are ready to build, this [checklist]() may help for rolling out your instance.
+When you are ready to build, this [checklist](#checklist) may help for rolling out your instance.
 
 ## Details
 
@@ -181,7 +181,7 @@ ORDER BY timestamp DESC
 LIMIT {{ Int32(max_results, 1000, description="The maximum number of reports to return per response. Defaults to 1000.") }}
 
 ```
-
+<a id="markdown-checklist" name="checklist"></a>
 ## Checklist for replicating this demo
 
 - [ ] Set up accounts
