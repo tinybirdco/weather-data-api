@@ -7,7 +7,7 @@ DESCRIPTION >
 This demo is driven by polling data from OpenWeatherMap and loading that into Tinybird with the Events API. All timestamps are in UTC. Data is ordered by timestamp in reverse-chronological order in most cases.
 
 
-TOKEN "reports_endpoint_read_6043" READ
+TOKEN "reports_endpoint_read" READ
 
 NODE city_and_period_of_interest
 DESCRIPTION >
