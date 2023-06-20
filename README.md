@@ -114,7 +114,7 @@ To help illustrate how the API Endpoint should work, below are some example requ
 
 ## Nodes 
 
-The ``reports`` Pipe is has three Nodes:
+The ``reports`` Pipe has three Nodes:
 
 + Node 1: Filtering by the city and time period of interest
 + Node 2: Selecting the sensor report type
