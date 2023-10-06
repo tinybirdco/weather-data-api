@@ -1,10 +1,10 @@
 # weather-data-api
 A demo to illustrate how to go from an API design to implementing (and hosting) it on Tinybird. 
 
-While this example focuses on publishing weather data, the underlying concepts should apply to an other data domain.
+While this example focuses on publishing weather data, the underlying concepts should apply to any other data domain.
 
 There are a lot of moving pieces, but here is a general outline of the resources provided:
-* Python script for getting weather data from OpenWeatherMap and posting it to a Tinybird Data Source.
+* Python script for getting weather data from OpenWeatherMap and posting it to a Tinybird Data Source using the [Events API](https://www.tinybird.co/docs/ingest/events-api.html).
 * How-tos for creating a ``incoming_weather_data`` Data Source and a ``reports`` Pipe. 
 * Python script for making requests to the weather API ``reports`` endpoint.  
 
@@ -210,10 +210,9 @@ LIMIT {{ Int32(max_results, 1000, description="The maximum number of reports to 
 
 Some ways to iterate the weather data API Endpoint: 
 
-- [ ] Add sensor types of ``wind_vel`` and ``wind_dir``.
+- [X] Add sensor types of ``wind_vel`` and ``wind_dir``.
 - [ ] Enable selecting a comma-delimited list of City names.
 - [ ] Parameterize number of days set start_time with (not a query parameter, but a configurable Pipe setting.
-- [ ] Enable selecting a comma-delimited list of City names.
 - [ ] Enable selecting a comma-delimited list of sensor types.
 - [ ] Add geographic metadata:
   - [ ] Capture OpenWeatherMap geo metadata for current set of cities. 
