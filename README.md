@@ -8,6 +8,13 @@ There are a lot of moving pieces, but here is a general outline of the resources
 * How-tos for creating a ``incoming_weather_data`` Data Source and a ``reports`` Pipe. 
 * Python script for making requests to the weather API ``reports`` endpoint.  
 
+`https://api.tinybird.co/v0/pipes/reports.json`
+[Endpoint documentation](https://ui.tinybird.co/23b79dee-af6b-43c5-a5eb-93b3c717e7b8/pipe/t_402200151ae947ea95bd2e5cf8c8dcf0/endpoint)
+
+These endpoints make the weather data to clients such as this Grafana dashboard:
+![Dashboard](images/weather-dashboard.png)
+
+
 ## Getting started 
 
 You can start by making a clone or fork of this repository. 
