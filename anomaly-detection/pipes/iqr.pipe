@@ -1,0 +1,42 @@
+DESCRIPTION >
+	This Pipe uses the [Interquartile Range (IQR)](https://en.wikipedia.org/wiki/Interquartile_range) to identify anomalies.
+
+See [HERE](https://github.com/tinybirdco/anomaly-detection/blob/main/content/interquartile-range.md) for more background on this recipe.
+
+
+NODE endpoint
+SQL >
+
+    %
+    WITH
+      {{ Int16(detect_window_seconds, 6000, description="Search this many most recent seconds of the data history.") }} AS detect_window_seconds,
+      stats AS (
+      WITH 
+        {{ Float32(iqr_multiplier, 3, description = "The multiplier of the IQR to set the range for testing for IQR anomalies.")}} AS iqr_multiplier,  
+        {{ Int16(stats_window_minutes, 300, description="Defines the time window (in MINUTES) for calculating quartiles.") }} AS stats_window_minutes
+      SELECT site_name,
+         quantileExact(0.25) (temp_f) AS lower_quartile,
+         # quantileExact(0.5) (temp_f) AS mid_quartile,  # Not needed.
+         quantileExact(0.75) (temp_f) AS upper_quartile,
+         (upper_quartile - lower_quartile) * iqr_multiplier AS IQR,
+         stats_window_minutes         
+      FROM weather_data.weather_data
+      WHERE timestamp BETWEEN (NOW() - INTERVAL stats_window_minutes MINUTE) AND NOW()
+        {% if defined(city) %}               
+          AND site_name = {{ String(city, description="Used to select a single city of interest. ")}}
+        {% end %}    
+      GROUP BY site_name
+    )
+     SELECT DISTINCT timestamp, 
+        site_name, 
+        temp_f, 
+        ROUND(stats.IQR,2) AS IQR,       
+        ROUND((stats.lower_quartile - stats.IQR),2) AS lower_bound, 
+        ROUND((stats.upper_quartile + stats.IQR),2) AS upper_bound 
+     FROM weather_data.weather_data
+     JOIN stats ON weather_data.weather_data.site_name = stats.site_name
+     WHERE timestamp BETWEEN NOW() - interval detect_window_seconds SECOND AND NOW()
+     AND (temp_f > (stats.upper_quartile + stats.IQR)
+     OR temp_f < (stats.lower_quartile - stats.IQR))
+     ORDER BY timestamp DESC
+
