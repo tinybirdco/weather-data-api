@@ -1,0 +1,30 @@
+NODE endpoint
+SQL >
+
+    %
+    WITH
+      {{ Int16(detect_window_seconds, 600, description="Search this many most recent seconds of the data history.") }} AS detect_window_seconds,
+      {{ Int16(min_value, 0, description="Integer. Minimum threshold, readings less than this number will be detected as anomalies.", required=False) }} AS min_value,
+      {{ Int32(max_value, 100, description="Integer. Maximum threshold, readings greater than this number will be detected as anomalies.", required=False) }} AS max_value
+    SELECT site_name, timestamp, temp_f
+    FROM weather_data.weather_data
+    WHERE 1
+    {% if not defined(min_value) and not defined(max_value) %}
+        AND temp_f < min_value OR temp_f > max_value
+    {% elif defined(min_value) %}
+      {% if defined(max_value) %}
+        AND temp_f < min_value OR temp_f > max_value
+      {% else %}
+        AND temp_f < min_value
+      {% end %}
+    {% elif defined(max_value) %}
+        AND temp_f > max_value
+    #{% else %}
+    #  {{ error('You must define at least one of min_value or max_value') }}
+    {% end %}
+    {% if defined(city) %}               
+      AND site_name = {{ String(city, description="Used to select a single city of interest. Optional.")}}       
+    {% end %}    
+    AND timestamp > NOW() - INTERVAL detect_window_seconds SECONDS
+    ORDER BY timestamp DESC
+
