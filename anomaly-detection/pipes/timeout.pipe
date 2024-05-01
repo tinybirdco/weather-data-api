@@ -1,0 +1,26 @@
+NODE get_most_recent
+SQL >
+
+    %
+     WITH {{ Int16(seconds,720,description="If a sensor has not reported in the specified aboout of seconds, it is considered 'timedout'. Defaults to 60.")}} AS seconds
+     SELECT site_name, 
+      timestamp, 
+      temp_f,
+      seconds
+    FROM weather_data.weather_data
+    WHERE timestamp > NOW() - INTERVAL 7 DAY
+    ORDER BY timestamp DESC
+    LIMIT 1 BY site_name
+
+
+
+NODE endpoint
+SQL >
+
+    %
+    SELECT site_name, timestamp, temp_f
+    FROM get_most_recent
+    WHERE timestamp < NOW() - INTERVAL seconds SECONDS
+    {% if defined(city) %}               
+      AND site_name = {{ String(city, description="Used to select a single city of interest. Otherwise, returns results for all cities.")}} 
+    {% end %}  
