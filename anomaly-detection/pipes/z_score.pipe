@@ -1,0 +1,50 @@
+ODE calculate_z_score
+SQL >
+
+    %
+    WITH 
+    {{ Float32(zscore_threshold, 2, description="Floating point number. The threshold for determining Z-score outliers, with scores higher than this detected as anomalies. Compared with absolute value of Z-score.")}} AS zscore_threshold,
+    {{ Int32(detect_window_seconds, 6000, description="Defines the time window (in SECONDS) for selecting data points to examine for anomalies. If polling on an interval, this can be set to match that interval to minimize duplicate detections.")}}  AS detect_window_seconds,
+    stats AS (
+      WITH  {{ Int16(stats_window_minutes, 60, description="Defines the time window (in MINUTES) for calculating data averages and standard deviations used to calculate Z-score")}} AS stats_window_minutes    
+      SELECT site_name,
+            avg(temp_f) AS average,
+            stddevPop(temp_f) AS stddev
+        FROM weather_data.weather_data
+        WHERE timestamp BETWEEN (NOW() - INTERVAL stats_window_minutes MINUTE) AND NOW()
+           {% if defined(city) %}               
+              AND site_name = {{ String(city, description="Used to select a single city of interest. Optional.")}}       
+           {% end %}  
+        GROUP BY site_name  
+    )
+    SELECT w.timestamp, 
+         w.site_name, 
+         w.temp_f, 
+         (w.temp_f - stats.average)/stats.stddev AS zscore,
+         stats.average,
+         stats.stddev,
+         zscore_threshold
+    FROM weather_data.weather_data w
+    JOIN stats s ON s.site_name = w.site_name
+    WHERE timestamp BETWEEN NOW() - INTERVAL detect_window_seconds SECOND AND NOW()
+    ORDER BY timestamp DESC
+
+
+
+NODE endpoint
+SQL >
+
+    %
+    SELECT timestamp,
+       site_name,
+       temp_f,
+       Round(zscore,2) AS zscore,
+       multiIf(zscore < (-1 * zscore_threshold), 'low', zscore > zscore_threshold, 'high','ok') AS test,
+       ROUND(average,2) AS average,
+       ROUND(stddev,2) AS stddev,
+       zscore_threshold
+    FROM calculate_z_score
+    WHERE test = 'low' OR test = 'high' 
+    AND zscore < -1 * zscore_threshold OR zscore > zscore_threshold 
+    ORDER by timestamp DESC
+
