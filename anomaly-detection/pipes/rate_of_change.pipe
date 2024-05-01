@@ -1,0 +1,47 @@
+ODE calculate_slope
+DESCRIPTION >
+    Would be good to have a variable for the sensor type. `sensor_type = 'temp_f'`
+
+SQL >
+
+    %
+    WITH
+      {{ Int16(detect_window_seconds, 6000, description="Search this many most recent seconds of the data history.") }} AS detect_window_seconds,
+      {{ Float32(max_slope, 1, description="Maximum slope, any higher than this are returned. Floating point")}} AS max_slope 
+    SELECT site_name, 
+      timestamp, 
+      previous_timestamp,
+      (temp_f - previous_value) / (timestamp - previous_timestamp) AS slope,
+      temp_f, 
+      previous_value,
+      (temp_f - previous_value) AS value_diff,
+      (timestamp - previous_timestamp) AS time_diff,
+      max_slope,
+      lagInFrame(timestamp, 1) OVER 
+        (PARTITION BY site_name ORDER BY timestamp ASC ROWS BETWEEN 1 PRECEDING AND 1 PRECEDING) AS previous_timestamp, 
+      lagInFrame(temp_f, 1) OVER
+        (PARTITION BY site_name ORDER BY timestamp ASC ROWS BETWEEN 1 PRECEDING AND 1 PRECEDING) AS previous_value
+    FROM weather_data.weather_data
+    WHERE timestamp > NOW() - INTERVAL detect_window_seconds SECOND
+      {% if defined(city) %}               
+        AND site_name = {{ String(city,description="Used to select a single city of interest. Otherwise, returns results for all cities.")}}
+      {% end %}    
+    ORDER BY timestamp DESC
+
+
+
+NODE endpoint
+SQL >
+
+    SELECT site_name, 
+      timestamp, 
+      Round(slope,2) as slope, 
+      Round(value_diff,2) as value_diff, 
+      time_diff, 
+      previous_value, 
+      temp_f, 
+      max_slope 
+    FROM calculate_slope
+    WHERE ABS(slope) > max_slope
+    ORDER BY timestamp DESC
+
